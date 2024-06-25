@@ -2,6 +2,6 @@
     "repositoryVersion": "0.1.0",
     "name": "Packify Package Repository (Official)",
     "packages": [
-        "packify-bootstrap"
+        "packify"
     ]
 }

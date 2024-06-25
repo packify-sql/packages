@@ -1,5 +1,5 @@
 {
-    "name": "packify-bootstrap",
+    "name": "packify",
     "version": "0.2.0",
     "install": [
         "1-create-user.sql"
