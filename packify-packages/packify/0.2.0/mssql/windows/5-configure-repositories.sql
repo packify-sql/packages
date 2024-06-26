@@ -10,23 +10,38 @@
  *
  */
 
-EXECUTE AS USER = 'PackifyUser'
+----------------------------------------------------------------------------------------------------
+DECLARE
+    @DefaultRepoName                NVARCHAR(200) = 'Packify Package Repository (Official)',
+    @DefaultRepoPath                NVARCHAR(200) = 'packify-sql/packages',
+    @DefaultRepoBranch              NVARCHAR(200) = 'main',
+    @DefaultRepoRawContentURLFormat NVARCHAR(200) = (
+        'https://raw.githubusercontent.com/:repo/:branch/:packageDir'
+    ),
+    @DefaultRepoListingURLFormat    NVARCHAR(200) = (
+        'https://api.github.com/repos/:repo/git/trees/:branch?recursive=1'
+    );
+----------------------------------------------------------------------------------------------------
 
-    /* Operate against the database we created in the previous step */
-    USE :database_escaped;
+/* Operate against the database we created in the previous step */
+USE :database_escaped;
+
+EXECUTE AS LOGIN = 'PackifyLogin'
 
     /* Create a schema for repository resources */
     EXEC sp_executesql
         N'CREATE SCHEMA [Remote];';
+    
+    PRINT 'Created [Remote] schema';
 
     /* Create the repositories table and register the official repository */
     CREATE TABLE Remote.Repositories (
         [RepositoryID]          INT PRIMARY KEY IDENTITY(1,1),
-        [Name]                  NVARCHAR(2000) NOT NULL,
-        [GitRepository]         NVARCHAR(2000) NOT NULL,
-        [Branch]                NVARCHAR(2000) NOT NULL,
-        [RawContentURLFormat]   NVARCHAR(2000) NOT NULL,
-        [ListingURLFormat]      NVARCHAR(2000) NOT NULL,
+        [Name]                  NVARCHAR(800) NOT NULL,
+        [GitRepository]         NVARCHAR(800) NOT NULL,
+        [Branch]                NVARCHAR(800) NOT NULL,
+        [RawContentURLFormat]   NVARCHAR(800) NOT NULL,
+        [ListingURLFormat]      NVARCHAR(800) NOT NULL,
         [CreateDateTime]        DATETIME NOT NULL DEFAULT (GETDATE()),
 
         CONSTRAINT
@@ -44,11 +59,13 @@ EXECUTE AS USER = 'PackifyUser'
         [ListingURLFormat]
     )
     VALUES (
-        'Packify Package Repository (Official)',
-        'packify-sql/packages',
-        'main',
-        'https://raw.githubusercontent.com/:repo/:branch/:packageDir',
-        'https://api.github.com/repos/:repo/git/trees/:branch?recursive=1'
+        @DefaultRepoName,
+        @DefaultRepoPath,
+        @DefaultRepoBranch,
+        @DefaultRepoRawContentURLFormat,
+        @DefaultRepoListingURLFormat
     );
+
+    PRINT 'Created the Remote.Repositories table and registered the default repository';
 
 REVERT
