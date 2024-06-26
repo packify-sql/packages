@@ -1,1 +1,1 @@
-PRINT 'hello, world';
+PRINT 'would install to database Database!';
