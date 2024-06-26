@@ -12,6 +12,20 @@ DECLARE
 
 PRINT 'Check environment for installation';
 
+/* Check if the current user is a sysadmin */
+IF IS_SRVROLEMEMBER('sysadmin') != 1 BEGIN
+    SET @errorNumber = 98100;
+    SET @errorMessage = CONCAT(
+        'Current user ''',
+        SUSER_SNAME(),
+        ''' is not a sysadmin. This is required for installation'
+    );
+
+    GOTO Error;
+END
+
+PRINT CONCAT('PASS: Current user ''', SUSER_SNAME(), ''' is a sysadmin');
+
 /* Check that the target database doesn't exist */
 IF EXISTS (
     SELECT
@@ -21,7 +35,7 @@ IF EXISTS (
     WHERE
         [name] = ':database_unescaped'
 ) BEGIN
-    SET @errorNumber = 98000;
+    SET @errorNumber = 98110;
     SET @errorMessage = 'Target database :database_escaped already exists';
 
     GOTO Error;
@@ -38,7 +52,7 @@ IF EXISTS (
     WHERE
         [name] = 'PackifyLogin'
 ) BEGIN
-    SET @errorNumber = 98010;
+    SET @errorNumber = 98120;
     SET @errorMessage = 'Target login PackifyLogin already exists';
 
     GOTO Error;
