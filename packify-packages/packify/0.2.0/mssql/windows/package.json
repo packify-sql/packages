@@ -6,7 +6,9 @@
         "install": [
             "1-check-environment.sql",
             "2-create-login.sql",
-            "3-create-database.sql"
+            "3-create-database.sql",
+            "4-configure-environment.sql",
+            "5-configure-repositories.sql"
         ],
         "update": null,
         "remove": null

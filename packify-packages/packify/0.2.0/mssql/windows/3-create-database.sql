@@ -1,5 +1,5 @@
 /*
- * 2-create-database.sql
+ * 3-create-database.sql
  *
  * Authors: Will Hinson
  * Created: 2024-06-26
@@ -10,12 +10,12 @@
  */
 
 /* Create the database using the provided escaped name */
-EXECUTE AS USER = 'PackifyUser';
+EXECUTE AS USER = 'PackifyUser'
 
     CREATE DATABASE
         :database_escaped;
 
-REVERT;
+REVERT
 
 DECLARE @databaseId INT = (
     SELECT
