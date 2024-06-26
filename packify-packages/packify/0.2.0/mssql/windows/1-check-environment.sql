@@ -65,6 +65,23 @@ END
 
 PRINT 'PASS: Target login PackifyLogin does not exist';
 
+/* Check that the PackifyUser doesn't already exist */
+IF EXISTS (
+    SELECT
+        *
+    FROM
+        sys.syslogins
+    WHERE
+        [name] = 'PackifyUser'
+) BEGIN
+    SET @errorNumber = 98130;
+    SET @errorMessage = 'Target user PackifyUser already exists';
+
+    GOTO Error;
+END
+
+PRINT 'PASS: Target user PackifyUser does not exist';
+
 RETURN;
 
 Error:

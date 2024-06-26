@@ -45,3 +45,23 @@ EXEC sp_executesql
 PRINT CONCAT(
     'Created login PackifyLogin with password ', @NewPassword
 );
+PRINT 'NOTE: This password will not be displayed again';
+
+/* Create a user on the master database for our new login */
+USE [master];
+
+CREATE USER
+    [PackifyUser]
+FOR LOGIN
+    [PackifyLogin];
+
+PRINT 'Created user PackifyUser in [master] for PackifyLogin';
+
+/* Grant create database to the new user */
+GRANT
+    CREATE ANY DATABASE
+TO
+    [PackifyLogin];
+
+PRINT 'Granted CREATE ANY DATABASE to PackifyUser';
+
