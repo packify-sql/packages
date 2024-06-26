@@ -13,7 +13,8 @@
         "targets": {
             "database": {
                 "method": "substitution",
-                "value": "Database!",
+                "unescapedValue": ":database",
+                "escapedValue": "Database!",
                 "default": "Packify"
             }
         }
