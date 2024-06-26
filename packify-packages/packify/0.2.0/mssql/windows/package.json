@@ -5,7 +5,7 @@
     "files": {
         "install": [
             "1-check-environment.sql",
-            "2-create-user.sql"
+            "2-create-login.sql"
         ],
         "update": null,
         "remove": null

@@ -1,9 +1,14 @@
 /*
  * 1-check-environment.sql
  *
+ * Authors: Will Hinson
+ * Created: 2024-06-26
+ * Updated: 2024-06-26
+ *
  * Checks that the environment allows for Packify to be installed
  * as configured. For example, the target database should not already
  * exist and we should be able to create a login for Packify
+ *
  */
 
 DECLARE
