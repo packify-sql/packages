@@ -59,9 +59,9 @@ PRINT 'Created user PackifyUser in [master] for PackifyLogin';
 
 /* Grant create database to the new user */
 GRANT
-    CREATE ANY DATABASE
+    CREATE DATABASE
 TO
-    [PackifyLogin];
+    [PackifyUser];
 
-PRINT 'Granted CREATE ANY DATABASE to PackifyUser';
+PRINT 'Granted CREATE DATABASE to PackifyUser';
 

@@ -5,7 +5,8 @@
     "files": {
         "install": [
             "1-check-environment.sql",
-            "2-create-login.sql"
+            "2-create-login.sql",
+            "3-create-database.sql"
         ],
         "update": null,
         "remove": null
@@ -19,5 +20,6 @@
                 "default": "Packify"
             }
         }
-    }
+    },
+    "requirements": []
 }

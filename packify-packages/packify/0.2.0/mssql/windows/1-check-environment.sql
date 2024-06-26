@@ -70,7 +70,7 @@ IF EXISTS (
     SELECT
         *
     FROM
-        sys.syslogins
+        sys.sysusers
     WHERE
         [name] = 'PackifyUser'
 ) BEGIN
