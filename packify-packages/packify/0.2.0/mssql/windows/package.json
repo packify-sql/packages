@@ -4,7 +4,8 @@
     "scope": "instance",
     "files": {
         "install": [
-            "1-create-user.sql"
+            "1-check-environment.sql",
+            "2-create-user.sql"
         ],
         "update": null,
         "remove": null
