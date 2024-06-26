@@ -14,8 +14,8 @@
         "targets": {
             "database": {
                 "method": "substitution",
-                "unescapedValue": ":database",
-                "escapedValue": "Database!",
+                "unescapedValue": ":database_unescaped",
+                "escapedValue": ":database_escaped",
                 "default": "Packify"
             }
         }
