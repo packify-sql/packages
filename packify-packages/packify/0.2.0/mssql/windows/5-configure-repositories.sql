@@ -17,7 +17,7 @@ EXECUTE AS USER = 'PackifyUser'
 
     /* Create a schema for repository resources */
     EXEC sp_executesql
-        'CREATE SCHEMA [Remote];';
+        N'CREATE SCHEMA [Remote];';
 
     /* Create the repositories table and register the official repository */
     CREATE TABLE Remote.Repositories (

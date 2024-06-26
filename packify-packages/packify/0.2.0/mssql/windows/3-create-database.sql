@@ -9,11 +9,16 @@
  *
  */
 
+USE [master];
+
 /* Create the database using the provided escaped name */
 EXECUTE AS USER = 'PackifyUser'
 
-    CREATE DATABASE
-        :database_escaped;
+    EXEC sp_executesql
+        N'
+        CREATE DATABASE
+            :database_escaped;
+        ';
 
 REVERT
 
@@ -36,5 +41,12 @@ ALTER AUTHORIZATION ON
     DATABASE:::database_escaped
 TO
     [PackifyLogin];
+
+
+USE :database_escaped;
+
+EXEC sp_addrolemember
+    'db_owner',
+    'PackifyLogin';
 
 PRINT 'Make PackifyLogin owner of :database_escaped database';

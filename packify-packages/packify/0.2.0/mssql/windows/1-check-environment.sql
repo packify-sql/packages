@@ -17,6 +17,8 @@ DECLARE
 
 PRINT 'Check environment for installation';
 
+USE [master];
+
 /* Check if the current user is a sysadmin */
 IF IS_SRVROLEMEMBER('sysadmin') != 1 BEGIN
     SET @errorNumber = 98100;
