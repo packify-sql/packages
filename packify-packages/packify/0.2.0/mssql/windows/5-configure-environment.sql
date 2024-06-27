@@ -35,6 +35,15 @@ EXECUTE AS LOGIN = 'PackifyLogin'
         )
     );
 
+    CREATE NONCLUSTERED INDEX
+        IX_Environment_Settings_SettingName_SettingValue
+    ON Environment.Settings (
+        [SettingName]
+    )
+    INCLUDE (
+        [SettingValue]
+    );
+
     /* Create a trigger to update the UpdateDateTime column */
     EXEC sp_executesql
         N'
@@ -52,6 +61,65 @@ EXECUTE AS LOGIN = 'PackifyLogin'
                 a.[SettingID] = b.[SettingID];
         END
         ';
+
+    /* Create function for getting settings */
+    EXEC sp_executesql
+        N'
+        CREATE FUNCTION Environment.GetSetting (
+            @SettingName    NVARCHAR(200)
+        ) RETURNS SQL_VARIANT AS BEGIN
+            DECLARE @result SQL_VARIANT;
+
+            SET @result = (
+                SELECT
+                    [SettingValue]
+                FROM
+                    Environment.Settings
+                WHERE
+                    [SettingName] = @SettingName
+            );
+
+            RETURN @result;
+        END
+        ';
+    
+    /* Create procedure for updating settings */
+    EXEC sp_executesql
+        N'
+        CREATE PROCEDURE Environment.UpdateSetting
+            @SettingName    NVARCHAR(200),
+            @SettingValue   SQL_VARIANT
+        AS BEGIN
+            SET NOCOUNT ON;
+
+            /* Update if a setting already exists with this name */
+            IF EXISTS (
+                SELECT
+                    *
+                FROM
+                    Environment.Settings
+                WHERE
+                    [SettingName] = @SettingName
+            ) BEGIN
+                UPDATE
+                    Environment.Settings
+                SET
+                    [SettingValue] = @SettingValue
+                WHERE
+                    [SettingName] = @SettingName;
+            END ELSE BEGIN
+                /* Otherwise, just insert a new setting */
+                INSERT INTO Environment.Settings (
+                    [SettingName],
+                    [SettingValue]
+                )
+                VALUES (
+                    @SettingName,
+                    @SettingValue
+                );
+            END
+        END
+        ';
     
     /* Register a setting for the default repository */
     DECLARE @defaultRepositoryID INT = (
@@ -62,34 +130,19 @@ EXECUTE AS LOGIN = 'PackifyLogin'
         ORDER BY
             [RepositoryID] DESC
     );
-        
-    INSERT INTO Environment.Settings (
-        [SettingName],
-        [SettingValue]
-    )
-    VALUES (
-        'DefaultRepository',
-        @defaultRepositoryID
-    );
+
+    EXEC Environment.UpdateSetting
+        @SettingName = 'DefaultRepository',
+        @SettingValue = @defaultRepositoryID;
 
     /* Register settings for dialect and platform */
-    INSERT INTO Environment.Settings (
-        [SettingName],
-        [SettingValue]
-    )
-    VALUES (
-        'InstallDialect',
-        'mssql'
-    );
-
-    INSERT INTO Environment.Settings (
-        [SettingName],
-        [SettingValue]
-    )
-    VALUES (
-        'InstallPlatform',
-        'windows'
-    );
+    EXEC Environment.UpdateSetting
+        @SettingName = 'InstallDialect',
+        @SettingValue = 'mssql';
+    
+    EXEC Environment.UpdateSetting
+        @SettingName = 'InstallPlatform',
+        @SettingValue = 'windows';
     
     DECLARE @settingsCount INT = (
         SELECT
@@ -97,7 +150,7 @@ EXECUTE AS LOGIN = 'PackifyLogin'
         FROM
             Environment.Settings
     );
-
+    
     PRINT CONCAT(
         'Created Environment.Settings table and populated ',
         @settingsCount,

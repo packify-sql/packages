@@ -67,4 +67,56 @@ EXECUTE AS LOGIN = 'PackifyLogin'
 
     PRINT 'Created the Remote.Repositories table and registered the default repository';
 
+    /* Create tables for package caches */
+    CREATE TABLE Remote.PackageCaches (
+        [PackageCacheID]        BIGINT PRIMARY KEY IDENTITY(1,1),
+        [RepositoryID]          INT NOT NULL,
+        [CreateDateTime]        DATETIME NOT NULL DEFAULT (GETDATE()),
+        [ValidUntil]            DATETIME NOT NULL,
+
+        CONSTRAINT
+            FK_Remote_PackageCaches_RepositoryID
+        FOREIGN KEY (
+            [RepositoryID]
+        )
+        REFERENCES Remote.Repositories (
+            [RepositoryID]
+        )
+        ON DELETE CASCADE,
+
+        CONSTRAINT
+            AK_Remote_PackageCaches_RepositoryID
+        UNIQUE (
+            [RepositoryID]
+        )
+    );
+
+    CREATE TABLE Remote.RepositoryPackages (
+        [RepositoryPackageID]   BIGINT PRIMARY KEY IDENTITY(1,1),
+        [PackageCacheID]        BIGINT NOT NULL,
+        [PackageName]           NVARCHAR(800) NOT NULL,
+        [VersionString]         NVARCHAR(800) NOT NULL,
+        [CreateDateTime]        DATETIME NOT NULL DEFAULT (GETDATE()),
+
+        CONSTRAINT
+            FK_Remote_RepositoryPackages_PackageCacheID
+        FOREIGN KEY (
+            [PackageCacheID]
+        )
+        REFERENCES Remote.PackageCaches (
+            [PackageCacheID]
+        )
+        ON DELETE CASCADE,
+
+        CONSTRAINT
+            AK_Remote_RepositoryPackages_PackageCacheIDPackageNameVersionString
+        UNIQUE (
+            [PackageCacheID],
+            [PackageName],
+            [VersionString]
+        )
+    );
+
+    PRINT 'Created Remote.PackageCaches and Remote.RepositoryPackages tables';
+
 REVERT
