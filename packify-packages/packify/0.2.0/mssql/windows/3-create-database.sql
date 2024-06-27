@@ -9,6 +9,8 @@
  *
  */
 
+USE [master];
+
 /* Create the database using the provided escaped name */
 EXECUTE AS USER = 'PackifyUser'
 
@@ -30,8 +32,6 @@ PRINT CONCAT(
     'Created database :database_escaped with database ID ',
     @databaseID
 );
-
-USE [master];
 
 /* Make the packify login the owner of the new database */
 ALTER AUTHORIZATION ON

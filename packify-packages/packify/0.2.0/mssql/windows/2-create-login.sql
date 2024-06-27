@@ -17,6 +17,8 @@ DECLARE
 SET @ValidPasswordChars += UPPER(@ValidPasswordChars);
 ----------------------------------------------------------------------------------------------------
 
+USE [master];
+
 /* Generate a random password for the login */
 DECLARE @NewPassword NVARCHAR(200) = '';
 WHILE LEN(@NewPassword) != @PasswordLength BEGIN
@@ -48,8 +50,6 @@ PRINT CONCAT(
 PRINT 'NOTE: This password will not be displayed again';
 
 /* Create a user on the master database for our new login */
-USE [master];
-
 CREATE USER
     [PackifyUser]
 FOR LOGIN

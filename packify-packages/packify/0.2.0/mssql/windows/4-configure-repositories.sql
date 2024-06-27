@@ -23,7 +23,6 @@ DECLARE
     );
 ----------------------------------------------------------------------------------------------------
 
-/* Operate against the database we created in the previous step */
 USE :database_escaped;
 
 EXECUTE AS LOGIN = 'PackifyLogin'
