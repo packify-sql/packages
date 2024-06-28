@@ -8,7 +8,8 @@
             "2-create-login.sql",
             "3-create-database.sql",
             "4-configure-repositories.sql",
-            "5-configure-environment.sql"
+            "5-configure-environment.sql",
+            "6-create-http-resources.sql"
         ],
         "update": null,
         "remove": null

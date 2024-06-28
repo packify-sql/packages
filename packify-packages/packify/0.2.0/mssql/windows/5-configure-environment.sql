@@ -162,4 +162,115 @@ EXECUTE AS LOGIN = 'PackifyLogin'
         )
     );
 
+    /* Create and populate tables for standard error codes */
+    CREATE TABLE Environment.Errors (
+        [ErrorID]           INT PRIMARY KEY IDENTITY(1,1),
+        [ErrorCode]         INT NOT NULL,
+        [ErrorName]         NVARCHAR(200) NOT NULL,
+        [CreateDateTime]    DATETIME NOT NULL DEFAULT (GETDATE()),
+
+        CONSTRAINT
+            AK_Environment_Errors_ErrorCode
+        UNIQUE (
+            [ErrorCode]
+        ),
+
+        CONSTRAINT
+            AK_Environment_Errors_ErrorName
+        UNIQUE (
+            [ErrorName]
+        )
+    );
+
+    CREATE TABLE Environment.ErrorCategories (
+        [ErrorCategoryID]   INT PRIMARY KEY IDENTITY(1,1),
+        [CategoryName]      NVARCHAR(200) NOT NULL,
+        [StartCode]         INT NOT NULL,
+        [EndCode]           INT NOT NULL,
+        [CreateDateTime]    DATETIME NOT NULL DEFAULT (GETDATE())
+    );
+
+    /* Create a function that will return an error code given its name */
+    EXEC sp_executesql
+        N'
+        CREATE FUNCTION Environment.GetErrorCode (
+            @ErrorName      NVARCHAR(200)
+        ) RETURNS INT AS BEGIN
+            DECLARE @errorCode INT = (
+                SELECT TOP 1
+                    [ErrorCode]
+                FROM
+                    Environment.Errors
+                WHERE
+                    [ErrorName] = @ErrorName
+            );
+
+            RETURN @errorCode;
+        END
+        ';
+
+    /* Add http specific error codes */
+    INSERT INTO Environment.Errors (
+        [ErrorCode],
+        [ErrorName]
+    )
+    VALUES (
+        97000,
+        'HttpRequestCreateFailure'
+    );
+
+    /* Add all of the valid http status codes as error codes in the 97000 series */
+    DECLARE @httpStatus INT = 100;
+    WHILE @httpStatus < 600 BEGIN
+        INSERT INTO Environment.Errors (
+            [ErrorCode],
+            [ErrorName]
+        )
+        VALUES (
+            97000 + @httpStatus,
+            CONCAT('HttpStatus', @httpStatus)
+        );
+
+        SET @httpStatus += 1;
+    END
+
+    INSERT INTO Environment.ErrorCategories (
+        [CategoryName],
+        [StartCode],
+        [EndCode]
+    )
+    VALUES (
+        'HttpStatusError',
+        97100,
+        97599
+    );
+
+    DECLARE
+        @errorCodeCount INT = (
+            SELECT
+                COUNT(*)
+            FROM
+                Environment.Errors
+        ),
+        @errorCategoryCount INT = (
+            SELECT
+                COUNT(*)
+            FROM
+                Environment.ErrorCategories
+        );
+    
+    PRINT 'Created Environment.Errors and Environment.ErrorCategories';
+    PRINT CONCAT(
+        'Registered ',
+        @errorCodeCount,
+        ' error codes and ',
+        @errorCategoryCount,
+        ' error categor',
+        IIF(
+            @errorCategoryCount = 1,
+            'y',
+            'ies'
+        )
+    );
+
 REVERT
