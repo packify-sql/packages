@@ -1,0 +1,29 @@
+{
+    "name": "packify",
+    "version": "0.2.0",
+    "scope": "instance",
+    "files": {
+        "install": [
+            "1-check-environment.sql",
+            "2-create-login.sql",
+            "3-create-database.sql",
+            "4-configure-repositories.sql",
+            "5-configure-environment.sql",
+            "6-create-http-resources.sql",
+            "7-populate-package-cache.sql"
+        ],
+        "update": null,
+        "remove": null
+    },
+    "parameters": {
+        "targets": {
+            "database": {
+                "method": "substitution",
+                "unescapedValue": ":database_unescaped",
+                "escapedValue": ":database_escaped",
+                "default": "Packify"
+            }
+        }
+    },
+    "requirements": []
+}
