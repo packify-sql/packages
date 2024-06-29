@@ -41,7 +41,7 @@ EXECUTE AS LOGIN = 'PackifyLogin'
         [Branch]                NVARCHAR(800) NOT NULL,
         [RawContentURLFormat]   NVARCHAR(800) NOT NULL,
         [ListingURLFormat]      NVARCHAR(800) NOT NULL,
-        [CreateDateTime]        DATETIME NOT NULL DEFAULT (GETDATE()),
+        [CreateDateTime]        DATETIMEOFFSET NOT NULL DEFAULT (SYSDATETIMEOFFSET()),
 
         CONSTRAINT
             AK_Remote_Repositories_Name
@@ -71,8 +71,8 @@ EXECUTE AS LOGIN = 'PackifyLogin'
     CREATE TABLE Remote.PackageCaches (
         [PackageCacheID]        BIGINT PRIMARY KEY IDENTITY(1,1),
         [RepositoryID]          INT NOT NULL,
-        [CreateDateTime]        DATETIME NOT NULL DEFAULT (GETDATE()),
-        [ValidUntil]            DATETIME NOT NULL,
+        [CreateDateTime]        DATETIMEOFFSET NOT NULL DEFAULT (SYSDATETIMEOFFSET()),
+        [ValidUntil]            DATETIMEOFFSET NOT NULL,
 
         CONSTRAINT
             FK_Remote_PackageCaches_RepositoryID
@@ -95,8 +95,10 @@ EXECUTE AS LOGIN = 'PackifyLogin'
         [RepositoryPackageID]   BIGINT PRIMARY KEY IDENTITY(1,1),
         [PackageCacheID]        BIGINT NOT NULL,
         [PackageName]           NVARCHAR(200) NOT NULL,
+        [PackageDialect]        NVARCHAR(200) NOT NULL,
+        [PackagePlatform]       NVARCHAR(200) NOT NULL,
         [VersionString]         NVARCHAR(200) NOT NULL,
-        [CreateDateTime]        DATETIME NOT NULL DEFAULT (GETDATE()),
+        [CreateDateTime]        DATETIMEOFFSET NOT NULL DEFAULT (SYSDATETIMEOFFSET()),
 
         CONSTRAINT
             FK_Remote_RepositoryPackages_PackageCacheID

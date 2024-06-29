@@ -52,8 +52,8 @@ EXECUTE AS LOGIN = 'PackifyLogin'
         [SettingID]         INT PRIMARY KEY IDENTITY(1,1),
         [SettingName]       NVARCHAR(200) NOT NULL,
         [SettingValue]      SQL_VARIANT NOT NULL,
-        [CreateDateTime]    DATETIME NOT NULL DEFAULT (GETDATE()),
-        [UpdateDateTime]    DATETIME NOT NULL DEFAULT (GETDATE()),
+        [CreateDateTime]    DATETIMEOFFSET NOT NULL DEFAULT (SYSDATETIMEOFFSET()),
+        [UpdateDateTime]    DATETIMEOFFSET NOT NULL DEFAULT (SYSDATETIMEOFFSET()),
 
         CONSTRAINT
             AK_Environment_Settings_SettingName
@@ -81,7 +81,7 @@ EXECUTE AS LOGIN = 'PackifyLogin'
             UPDATE
                 Environment.Settings
             SET
-                UpdateDateTime = GETDATE()
+                UpdateDateTime = SYSDATETIMEOFFSET()
             FROM
                 Environment.Settings AS a
             INNER JOIN Inserted AS b ON
@@ -171,6 +171,10 @@ EXECUTE AS LOGIN = 'PackifyLogin'
         @SettingName = 'InstallPlatform',
         @SettingValue = 'windows';
     
+    EXEC Environment.UpdateSetting
+        @SettingName = 'DefaultCacheValidTime',
+        @SettingValue = 3600;
+    
     DECLARE @settingsCount INT = (
         SELECT
             COUNT(*)
@@ -194,7 +198,7 @@ EXECUTE AS LOGIN = 'PackifyLogin'
         [ErrorID]           INT PRIMARY KEY IDENTITY(1,1),
         [ErrorCode]         INT NOT NULL,
         [ErrorName]         NVARCHAR(200) NOT NULL,
-        [CreateDateTime]    DATETIME NOT NULL DEFAULT (GETDATE()),
+        [CreateDateTime]    DATETIMEOFFSET NOT NULL DEFAULT (SYSDATETIMEOFFSET()),
 
         CONSTRAINT
             AK_Environment_Errors_ErrorCode
@@ -214,7 +218,26 @@ EXECUTE AS LOGIN = 'PackifyLogin'
         [CategoryName]      NVARCHAR(200) NOT NULL,
         [StartCode]         INT NOT NULL,
         [EndCode]           INT NOT NULL,
-        [CreateDateTime]    DATETIME NOT NULL DEFAULT (GETDATE())
+        [CreateDateTime]    DATETIMEOFFSET NOT NULL DEFAULT (SYSDATETIMEOFFSET())
+    );
+
+    /* Insert remote repository related errors */
+    INSERT INTO Environment.Errors (
+        [ErrorCode],
+        [ErrorName]
+    )
+    VALUES
+        (96000, 'NoSuchRepositoryExists');
+    
+    INSERT INTO Environment.ErrorCategories (
+        [CategoryName],
+        [StartCode],
+        [EndCode]
+    )
+    VALUES (
+        'RepositoryErrors',
+        96000,
+        96000
     );
 
     /* Create a function that will return an error code given its name */
