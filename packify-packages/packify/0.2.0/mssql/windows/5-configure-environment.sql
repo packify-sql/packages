@@ -3,11 +3,38 @@
  *
  * Authors: Will Hinson
  * Created: 2024-06-26
- * Updated: 2024-06-26
+ * Updated: 2024-06-28
  *
  * Configures the Packify environment and default settings
  *
  */
+
+/* Run GRANT queries against master */
+USE [master];
+
+/* Grant permissions on the required OA procedures */
+GRANT EXECUTE ON
+    sp_OACreate
+TO
+    [PackifyUser];
+
+GRANT EXECUTE ON
+    sp_OADestroy
+TO
+    [PackifyUser];
+
+GRANT EXECUTE ON
+    sp_OAGetProperty
+TO
+    [PackifyUser];
+
+GRANT EXECUTE ON
+    sp_OAMethod
+TO
+    [PackifyUser];
+
+PRINT 'Granted permissions on OLE Automation procedures to [PackifyUser]';
+
 
 /* Operate against the database we created in the previous step */
 USE :database_escaped;
@@ -89,7 +116,7 @@ EXECUTE AS LOGIN = 'PackifyLogin'
         CREATE PROCEDURE Environment.UpdateSetting
             @SettingName    NVARCHAR(200),
             @SettingValue   SQL_VARIANT
-        AS BEGIN
+        WITH EXECUTE AS OWNER AS BEGIN
             SET NOCOUNT ON;
 
             /* Update if a setting already exists with this name */
@@ -214,10 +241,13 @@ EXECUTE AS LOGIN = 'PackifyLogin'
         [ErrorCode],
         [ErrorName]
     )
-    VALUES (
-        97000,
-        'HttpRequestCreateFailure'
-    );
+    VALUES
+        (97000, 'HttpRequestCreateFailure'),
+        (97010, 'HttpRequestOpenFailure'),
+        (97020, 'HttpRequestHeaderSetFailure'),
+        (97030, 'HttpRequestSendFailure'),
+        (97040, 'HttpRequestGetStatusCodeFailure'),
+        (97050, 'HttpRequestGetResponseFailure');
 
     /* Add all of the valid http status codes as error codes in the 97000 series */
     DECLARE @httpStatus INT = 100;

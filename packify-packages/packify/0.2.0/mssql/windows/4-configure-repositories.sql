@@ -94,8 +94,8 @@ EXECUTE AS LOGIN = 'PackifyLogin'
     CREATE TABLE Remote.RepositoryPackages (
         [RepositoryPackageID]   BIGINT PRIMARY KEY IDENTITY(1,1),
         [PackageCacheID]        BIGINT NOT NULL,
-        [PackageName]           NVARCHAR(800) NOT NULL,
-        [VersionString]         NVARCHAR(800) NOT NULL,
+        [PackageName]           NVARCHAR(200) NOT NULL,
+        [VersionString]         NVARCHAR(200) NOT NULL,
         [CreateDateTime]        DATETIME NOT NULL DEFAULT (GETDATE()),
 
         CONSTRAINT
