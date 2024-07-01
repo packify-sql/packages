@@ -119,6 +119,29 @@ EXECUTE AS LOGIN = 'PackifyLogin'
         )
     );
 
-    PRINT 'Created Remote.PackageCaches and Remote.RepositoryPackages tables';
+    CREATE TABLE Remote.RepositoryPackageVersions (
+        [RepositoryPackageID]   BIGINT NOT NULL,
+        [SegmentOrdinal]        INT NOT NULL,
+        [SegmentValue]          NVARCHAR(MAX) NOT NULL,
+
+        CONSTRAINT
+            FK_Remote_RepositoryPackageVersions_RepositoryPackageID
+        FOREIGN KEY (
+            [RepositoryPackageID]
+        )
+        REFERENCES Remote.RepositoryPackages (
+            [RepositoryPackageID]
+        )
+        ON DELETE CASCADE,
+
+        CONSTRAINT
+            AK_Remote_RepositoryPackageVersions_RepositoryPackageIDSegmentOrdinal
+        UNIQUE (
+            [RepositoryPackageID],
+            [SegmentOrdinal]
+        )
+    );
+
+    PRINT 'Created Remote.PackageCaches, Remote.RepositoryPackages and Remote.RepositoryPackageVersions tables';
 
 REVERT

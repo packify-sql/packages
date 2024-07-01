@@ -400,6 +400,58 @@ EXECUTE AS LOGIN = 'PackifyLogin'
                     [PackagePlatform]
                 FROM
                     @tblPackages;
+                
+                /* Update version cache for all packages */
+                DECLARE packageCursor CURSOR FOR
+                SELECT
+                    [RepositoryPackageID],
+                    [VersionString]
+                FROM
+                    Remote.RepositoryPackages;
+                
+                DECLARE
+                    @repositoryPackageID    INT,
+                    @versionString          NVARCHAR(MAX);
+
+                OPEN packageCursor;
+                
+                FETCH NEXT FROM
+                    packageCursor
+                INTO
+                    @repositoryPackageID,
+                    @versionString;
+                
+                WHILE @@FETCH_STATUS = 0 BEGIN
+                    /* Parse the version string */
+                    DECLARE @tblVersionParsed TABLE (
+                        [SegmentOrdinal]    INT,
+                        [SegmentValue]      NVARCHAR(MAX)
+                    );
+                    DELETE FROM @tblVersionParsed;
+
+                    INSERT INTO
+                        @tblVersionParsed
+                    EXEC Packages.ParseVersion
+                        @versionString;
+
+                    /* Cache the parsed version */
+                    INSERT INTO
+                        Remote.RepositoryPackageVersions
+                    SELECT
+                        @repositoryPackageID,
+                        *
+                    FROM
+                        @tblVersionParsed;
+
+                    FETCH NEXT FROM
+                        packageCursor
+                    INTO
+                        @repositoryPackageID,
+                        @versionString;
+                END
+
+                CLOSE packageCursor;
+                DEALLOCATE packageCursor;
             
             COMMIT;
         END
@@ -482,5 +534,7 @@ EXECUTE AS LOGIN = 'PackifyLogin'
     /* Update all repository caches */
     EXEC Remote.UpdateAllRepositoryCaches
         @ForceUpdates = 1;
+    
+    PRINT 'Initialized package caches for all repositories';
 
 REVERT

@@ -10,8 +10,8 @@
             "4-configure-repositories.sql",
             "5-configure-environment.sql",
             "6-create-http-resources.sql",
-            "7-populate-package-cache.sql",
-            "8-package-versioning.sql"
+            "7-package-versioning.sql",
+            "8-populate-package-cache.sql"
         ],
         "update": null,
         "remove": null
