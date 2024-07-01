@@ -221,6 +221,26 @@ EXECUTE AS LOGIN = 'PackifyLogin'
         [CreateDateTime]    DATETIMEOFFSET NOT NULL DEFAULT (SYSDATETIMEOFFSET())
     );
 
+    /* Insert parameter related errors */
+    INSERT INTO Environment.Errors (
+        [ErrorCode],
+        [ErrorName]
+    )
+    VALUES
+        (95000, 'ParameterCannotBeNull'),
+        (95010, 'InvalidParameterValue');
+    
+    INSERT INTO Environment.ErrorCategories (
+        [CategoryName],
+        [StartCode],
+        [EndCode]
+    )
+    VALUES (
+        'ParameterErrors',
+        95000,
+        95000
+    );
+
     /* Insert remote repository related errors */
     INSERT INTO Environment.Errors (
         [ErrorCode],

@@ -1,0 +1,23 @@
+{
+    "name": "test-packages/package-a",
+    "version": "0.1.0",
+    "scope": "database",
+    "files": {
+        "install": [
+            "install.sql"
+        ],
+        "update": null,
+        "remove": null
+    },
+    "parameters": {
+        "targets": {
+            "schema": {
+                "method": "substitution",
+                "unescapedValue": ":schema_unescaped",
+                "escapedValue": ":schema_escaped",
+                "default": "PackageA"
+            }
+        }
+    },
+    "requirements": []
+}
